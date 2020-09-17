@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "856233541353",
+    "firebase_url": "https://tipteapi-289415.firebaseio.com",
+    "project_id": "tipteapi-289415",
+    "storage_bucket": "tipteapi-289415.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:856233541353:android:04a364a7a94224180e3a78",
+        "android_client_info": {
+          "package_name": "com.india.tip_teapi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "856233541353-j0humb5tkgt8sjh3blak0295kok1mnkc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.india.tip_teapi",
+            "certificate_hash": "bde15c58ad0a540954d4f30d313d1b71e0c42e06"
+          }
+        },
+        {
+          "client_id": "856233541353-ujkc3obl23f3nn1lmo7m0ua2tns0dbrn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQkVyurQZpaNFDCDZZt5uGBUku4EgJJXM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "856233541353-ujkc3obl23f3nn1lmo7m0ua2tns0dbrn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
