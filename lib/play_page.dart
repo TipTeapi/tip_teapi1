@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:tip_teapi/comment.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:convert';
 import 'dart:async';
@@ -17,7 +16,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 List<dynamic> videoUrls = [];
 List videoIds = [];
 List videoUserIds = [];
+List<dynamic> comments;
 User googleUser;
+var _playingIndex;
+
+final TextEditingController _commentController = new TextEditingController();
 
 class PlayPage extends StatefulWidget {
   final UserCategoryData data;
@@ -28,12 +31,17 @@ class PlayPage extends StatefulWidget {
   _PlayPageState createState() => _PlayPageState(data);
 }
 
-class _PlayPageState extends State<PlayPage> with WidgetsBindingObserver {
+class _PlayPageState extends State<PlayPage>
+    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
   final UserCategoryData data;
   _PlayPageState(this.data);
   VideoPlayerController _videoController;
   var categoryList;
   bool isLiked = true;
+  AnimationController _controller;
+  Animation _animation;
+
+  FocusNode _focusNode = FocusNode();
 
   Future<void> fetchVideo() async {
     //getting user selected category
@@ -64,17 +72,40 @@ class _PlayPageState extends State<PlayPage> with WidgetsBindingObserver {
       videoIds = videos.map((e) => e.v_id).toList();
       videoUserIds = videos.map((e) => e.userId).toList();
 
-      //print(jsonDat);
-      print(videoIds);
-
       //calling video player
       _initializeAndPlay(0);
+
+      //getting likes
+      getLikeCount();
+
+      //getting comment
+      //getComment(_playingIndex);
     } catch (error) {
       debugPrint(error);
     }
   }
 
-  var _playingIndex;
+  Future<void> getLikeCount() async {
+    //api key
+    String key =
+        '6adca579a9111ab5af265be8ed52742797f5ae6e67eebcfc793449d63618e7e5';
+
+    String userId = googleUser.displayName == null
+        ? googleUser.phoneNumber
+        : googleUser.displayName;
+
+    //http request to fetch video data
+    String url =
+        "http://api.teapai.in/api_getLike.php?api_key=$key&userId=$userId&type=video";
+
+    try {
+      final response = await http.get(url);
+      //print(jsonDecode(response.body));
+    } catch (e) {
+      debugPrint('error');
+    }
+  }
+
   var _disposed = false;
   var _isEndOfClip = false;
   var _progress = 0.0;
@@ -142,6 +173,8 @@ class _PlayPageState extends State<PlayPage> with WidgetsBindingObserver {
     _videoController?.dispose();
     _videoController = null;
     WidgetsBinding.instance.removeObserver(this);
+    _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -305,6 +338,9 @@ class _PlayPageState extends State<PlayPage> with WidgetsBindingObserver {
               },
               heroTag: null,
             ),
+            Container(
+              child: Text(''),
+            ),
             SizedBox(
               height: 10,
             ),
@@ -313,6 +349,9 @@ class _PlayPageState extends State<PlayPage> with WidgetsBindingObserver {
               child:
                   Icon(FontAwesomeIcons.share, color: Colors.white, size: 30),
               onPressed: () {
+                if (_isPlaying) {
+                  _videoController.pause();
+                }
                 //print(_playingIndex);
               },
               heroTag: null,
@@ -325,8 +364,10 @@ class _PlayPageState extends State<PlayPage> with WidgetsBindingObserver {
               child:
                   Icon(FontAwesomeIcons.comment, color: Colors.white, size: 30),
               onPressed: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => MyTextInput()));
+                if (_isPlaying) {
+                  _videoController.pause();
+                }
+                showCommentBottomModal(context);
               },
               heroTag: null,
             ),
@@ -544,6 +585,112 @@ class _PlayPageState extends State<PlayPage> with WidgetsBindingObserver {
       ],
     );
   }
+
+  void showCommentBottomModal(context) {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              InkWell(
+                onTap: () {},
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: TextFormField(
+                    autofocus: false,
+                    decoration: InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                        borderSide: BorderSide(color: Colors.teal[600]),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(15.0),
+                          ),
+                          borderSide: BorderSide(color: Colors.teal[600])),
+                      filled: true,
+                      fillColor: Colors.grey[300],
+                      hintText: "Write Your Comment...",
+                    ),
+                    controller: _commentController,
+                  ),
+                ),
+              ),
+              FlatButton(
+                child: Icon(
+                  FontAwesomeIcons.paperPlane,
+                  color: Colors.teal[600],
+                  size: 35.0,
+                ),
+                textColor: Colors.black,
+                padding: EdgeInsets.fromLTRB(40.0, 18.0, 40.0, 18.0),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(26.0)),
+                    side: BorderSide(width: 2.0, color: Colors.teal[600])),
+                onPressed: () async {
+                  final comment = _commentController.text.trim();
+                  await postComment(comment, _playingIndex);
+                },
+                color: Colors.white,
+              ),
+              SizedBox(height: 4.0),
+            ],
+          );
+        });
+  }
+}
+
+Future<void> getComment(id) async {
+  //api key
+  String key =
+      '6adca579a9111ab5af265be8ed52742797f5ae6e67eebcfc793449d63618e7e5';
+
+  String assetId = videoIds[_playingIndex];
+
+  //http request to fetch video data
+  String url =
+      "http://api.teapai.in/api_getComment.php?api_key=$key&assetId=$assetId&type=video";
+
+  try {
+    final response = await http.get(url);
+    comments = jsonDecode(response.body);
+
+    print(comments);
+  } catch (e) {
+    debugPrint('error');
+  }
+}
+
+Future<void> postComment(txt, vId) async {
+  final String api_key =
+      "6adca579a9111ab5af265be8ed52742797f5ae6e67eebcfc793449d63618e7e5";
+
+  final String apiUrl = "http://api.teapai.in/api_putComment.php";
+
+  String assetId = videoIds[vId];
+
+  String userId = googleUser.displayName == null
+      ? googleUser.phoneNumber
+      : googleUser.displayName;
+
+  final response = await http.post(apiUrl, body: {
+    "userId": userId,
+    "assetId": assetId,
+    "type": 'video',
+    "comment": txt,
+    "api_key": api_key,
+  });
+
+  if (response.statusCode == 200) {
+    print(response.body);
+  } else {
+    print('error');
+  }
+  //getting comment
+  await getComment(assetId);
 }
 
 Future<void> likeVideo(id) async {
@@ -573,3 +720,19 @@ Future<void> likeVideo(id) async {
     print('error');
   }
 }
+
+// Widget commentList(BuildContext ctx) {
+//   return Center(
+//     child: ListView.builder(
+//       itemCount: 5,
+//       itemBuilder: (ctx, index) {
+//         return Card(
+//           child: ListTile(
+//             onTap: () {},
+//             title: Text('hi'),
+//           ),
+//         );
+//       },
+//     ),
+//   );
+// }
