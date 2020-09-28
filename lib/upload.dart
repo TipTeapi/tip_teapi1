@@ -43,7 +43,13 @@ class UploadState extends State<Upload> {
     'Music',
     'Dance',
     'Art',
-    'Science and Education'
+    'Science and Education',
+    'Dining',
+    'Travel',
+    'Beauty',
+    'Sports',
+    'Craft',
+    'Game'
   ];
 
   Future<void> showSelectDialog(BuildContext context) {
@@ -58,7 +64,7 @@ class UploadState extends State<Upload> {
               ),
               textAlign: TextAlign.center,
             ),
-            backgroundColor: Colors.teal[900],
+            backgroundColor: Colors.purpleAccent,
             content: SingleChildScrollView(
               child: ListBody(
                 children: [
@@ -109,10 +115,17 @@ class UploadState extends State<Upload> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       body: Center(
         child: Container(
-          color: Colors.black38,
+          height: 350,
+          width: 350,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.purpleAccent,Colors.deepPurple[100]]
+            )
+          ),
+
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -134,8 +147,8 @@ class UploadState extends State<Upload> {
                       msg: "Select A Category!!",
                       toastLength: Toast.LENGTH_SHORT,
                       gravity: ToastGravity.CENTER,
-                      backgroundColor: Colors.teal[400],
-                      textColor: Colors.white,
+                      backgroundColor: Colors.white,
+                      textColor: Colors.black,
                       fontSize: 16.0,
                     );
                   }
@@ -143,13 +156,13 @@ class UploadState extends State<Upload> {
                 child: Text(
                   'Click Here',
                   style: TextStyle(
-                    color: Colors.teal[400],
+                    color: Colors.black,
                     fontSize: 20.0,
                   ),
                 ),
               ),
               DropdownButton<String>(
-                dropdownColor: Colors.teal[800],
+                dropdownColor: Colors.white,
                 items: _categories.map(
                   (String dropDownStringitem) {
                     return DropdownMenuItem<String>(
@@ -157,7 +170,7 @@ class UploadState extends State<Upload> {
                       child: Text(
                         dropDownStringitem,
                         style: TextStyle(
-                          color: Colors.white,
+                          color: Colors.black,
                         ),
                       ),
                     );
@@ -184,7 +197,7 @@ class UploadState extends State<Upload> {
                   ),
                   Text(
                     'Only mp4,avi,mov,flv,wmv Formats Allowed',
-                    style: TextStyle(color: Colors.teal[400], fontSize: 16.0),
+                    style: TextStyle(color: Colors.white, fontSize: 16.0),
                   )
                 ],
               )

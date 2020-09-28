@@ -15,7 +15,7 @@ class ExitConfirmationDialog extends StatelessWidget {
   _buildChild(BuildContext context) => Container(
         height: 350,
         decoration: BoxDecoration(
-            color: Colors.black,
+            color: Colors.purple[700],
             shape: BoxShape.rectangle,
             borderRadius: BorderRadius.all(Radius.circular(12))),
         child: Column(
@@ -26,6 +26,7 @@ class ExitConfirmationDialog extends StatelessWidget {
                 child: Icon(
                   FontAwesomeIcons.frown,
                   size: 110.0,
+                  color: Colors.deepPurple[300],
                 ),
               ),
               width: double.infinity,

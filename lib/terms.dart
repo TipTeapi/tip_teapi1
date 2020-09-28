@@ -18,7 +18,7 @@ class MyConState extends State<MyCon> {
         appBar: new AppBar(
           centerTitle: true,
           title: new Text('Terms and Conditions'),
-          backgroundColor: Colors.black,
+          backgroundColor: Colors.purple[300],
         ),
         body: Center(
             child: Container(

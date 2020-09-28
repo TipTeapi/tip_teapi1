@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import './category_menu.dart';
+//import './category_menu.dart';
+import './categoryNw.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -31,7 +32,7 @@ class _MyAppState extends State<MyApp> {
           constraints: BoxConstraints.expand(),
           decoration: BoxDecoration(
             image: DecorationImage(
-                image: AssetImage("assets/images/splashTeapi.png"),
+                image: AssetImage("assets/Splash/Default@3x.png"),
                 fit: BoxFit.cover),
           ),
         ),
