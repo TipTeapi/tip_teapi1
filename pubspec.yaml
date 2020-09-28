@@ -55,7 +55,7 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/appLogo1.png"
+  image_path: "assets/App-Icon/Icon@2x.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -75,6 +75,7 @@ flutter:
     - assets/User-Profile/
     - assets/Category/
     - assets/Home/
+    - assets/App-Icon/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

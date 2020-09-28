@@ -521,7 +521,7 @@ class _PlayPageState extends State<PlayPage> with WidgetsBindingObserver {
                   if (googleUser != null) {
                     _shareThisVideo(context, _playingIndex);
                   } else {
-                    _shareThisVideo(context, _playingIndex);
+                    _showSignInModal(context);
                   }
                 },
                 heroTag: null,
