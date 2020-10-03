@@ -14,10 +14,10 @@ class VideoInfo {
       this.assetVideo,
       this.no_of_likes});
 
-  @override
-  String toString() {
-    return v_id;
-  }
+  // @override
+  // String toString() {
+  //   return assetVideo;
+  // }
 }
 
 class LikeInfo {

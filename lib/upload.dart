@@ -1,4 +1,5 @@
-//import 'dart:convert';
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:async';
@@ -6,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:file_picker/file_picker.dart';
 
 class Upload extends StatefulWidget {
   @override
@@ -18,8 +20,7 @@ class UploadState extends State<Upload> {
   var _currentItemSelected = 'Choose A Category';
   User firebaseUser;
   var msgShow;
-
-  Future<void> uploadVideo(String filename, String url) async {
+  uploadVideo(String filename, String url) async {
     const api_key =
         '6adca579a9111ab5af265be8ed52742797f5ae6e67eebcfc793449d63618e7e5';
 
@@ -32,8 +33,8 @@ class UploadState extends State<Upload> {
         .add(await http.MultipartFile.fromPath('assetVideo', filename));
     var res = await request.send();
     final streamRes = await res.stream.bytesToString();
-    //String msg = jsonDecode(streamRes);
-    print(streamRes);
+    final apiResponse = jsonDecode(streamRes);
+    return apiResponse['message'];
   }
 
   var _categories = [
@@ -44,7 +45,7 @@ class UploadState extends State<Upload> {
     'Dance',
     'Art',
     'Science and Education',
-    'Dining',
+    'Food',
     'Travel',
     'Beauty',
     'Sports',
@@ -78,9 +79,21 @@ class UploadState extends State<Upload> {
                           maxDuration: const Duration(
                             seconds: 30,
                           ));
-                      await uploadVideo(file.path, url);
+                      if (file != null) {
+                        msgShow = await uploadVideo(file.path, url);
+                      }
 
-                      Navigator.of(context).pop();
+                      if (msgShow != null) {
+                        Fluttertoast.showToast(
+                          msg: msgShow,
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          backgroundColor: Colors.deepPurple[400],
+                          textColor: Colors.white,
+                          fontSize: 16.0,
+                        );
+                        Navigator.of(context).pop();
+                      }
                     },
                   ),
                   Padding(
@@ -90,11 +103,33 @@ class UploadState extends State<Upload> {
                     child: Icon(FontAwesomeIcons.photoVideo,
                         size: 35.0, color: Colors.amber[50]),
                     onTap: () async {
+                      File file;
                       const url = 'http://api.teapai.in/api_putVideo.php';
-                      var file =
-                          await picker.getVideo(source: ImageSource.gallery);
-                      await uploadVideo(file.path, url);
-                      Navigator.of(context).pop();
+                      FilePickerResult result = await FilePicker.platform
+                          .pickFiles(type: FileType.custom, allowedExtensions: [
+                        'mp4',
+                        'avi',
+                        'mov',
+                        'flv',
+                        'wmv',
+                      ]);
+                      if (result != null) {
+                        file = File(result.files.single.path);
+                        msgShow = await uploadVideo(file.path, url);
+                      }
+
+                      //print(file.path);
+                      if (msgShow != null) {
+                        Fluttertoast.showToast(
+                          msg: msgShow,
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          backgroundColor: Colors.deepPurple,
+                          textColor: Colors.white,
+                          fontSize: 16.0,
+                        );
+                        Navigator.of(context).pop();
+                      }
                     },
                   ),
                 ],
@@ -121,11 +156,8 @@ class UploadState extends State<Upload> {
           height: 350,
           width: 350,
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.purpleAccent,Colors.deepPurple[100]]
-            )
-          ),
-
+              gradient: LinearGradient(
+                  colors: [Colors.purpleAccent, Colors.deepPurple[100]])),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,

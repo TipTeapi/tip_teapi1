@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tip_teapi/categoryNw.dart';
-//import './play_page.dart';
+import 'package:international_phone_input/international_phone_input.dart';
 
 class PhoneSignUp extends StatefulWidget {
   @override
@@ -93,6 +93,16 @@ class _PhoneSignUpState extends State<PhoneSignUp> {
     // });
   }
 
+  String phone;
+  void onPhoneNumberChange(
+      String number, String internationalizedPhoneNumber, String isoCode) {
+    phone = _phoneController.text.trim();
+    setState(() {
+      phone = internationalizedPhoneNumber;
+      //print(phone);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -111,7 +121,7 @@ class _PhoneSignUpState extends State<PhoneSignUp> {
                     SizedBox(
                       height: 10.0,
                     ),
-                    TextFormField(
+                    InternationalPhoneInput(
                       decoration: InputDecoration(
                         enabledBorder: OutlineInputBorder(
                             borderRadius:
@@ -125,8 +135,27 @@ class _PhoneSignUpState extends State<PhoneSignUp> {
                         fillColor: Colors.grey[100],
                         hintText: "Mobile Number",
                       ),
-                      controller: _phoneController,
+                      onPhoneNumberChange: onPhoneNumberChange,
+                      initialPhoneNumber: phone,
+                      initialSelection: 'IN',
+                      showCountryCodes: true,
                     ),
+                    // TextFormField(
+                    //   decoration: InputDecoration(
+                    //     enabledBorder: OutlineInputBorder(
+                    //         borderRadius:
+                    //             BorderRadius.all(Radius.circular(15.0)),
+                    //         borderSide: BorderSide(color: Colors.purple)),
+                    //     focusedBorder: OutlineInputBorder(
+                    //         borderRadius:
+                    //             BorderRadius.all(Radius.circular(15.0)),
+                    //         borderSide: BorderSide(color: Colors.purple)),
+                    //     filled: true,
+                    //     fillColor: Colors.grey[100],
+                    //     hintText: "Mobile Number",
+                    //   ),
+                    //   controller: _phoneController,
+                    // ),
                     SizedBox(
                       height: 20.0,
                     ),
@@ -144,7 +173,7 @@ class _PhoneSignUpState extends State<PhoneSignUp> {
                           borderRadius: BorderRadius.circular(40.0),
                         ),
                         onPressed: () {
-                          final phone = _phoneController.text.trim();
+                          //final phone = _phoneController.text.trim();
                           //print(phone);
                           loginUser(phone, context);
                         },

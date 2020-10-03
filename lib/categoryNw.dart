@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-//import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tip_teapi/helpers/dialog_helper.dart';
-import './play_pageNw.dart';
+//import './play_pageNw.dart';
+import './play_video.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import './VideoInfo.dart';
+import 'dart:convert';
+//import 'dart:async';
+import 'package:http/http.dart' as http;
 
 List<String> catList = [];
 
@@ -11,14 +15,43 @@ class Category extends StatefulWidget {
   _CategoryState createState() => _CategoryState();
 }
 
-class UserSelCategoryData {
-  List<String> dataList;
-
-  UserSelCategoryData({this.dataList});
-}
-
 class _CategoryState extends State<Category> {
-  UserSelCategoryData data = UserSelCategoryData();
+  List<VideoInfo> videos;
+
+  //fetching user selected category videos
+  Future fetchVideo(List categories) async {
+    //getting user selected category
+    catList = categories;
+
+    String userCategory = catList.join(",");
+
+    //api key
+    String key =
+        '6adca579a9111ab5af265be8ed52742797f5ae6e67eebcfc793449d63618e7e5';
+
+    //http request to fetch video data
+    String url =
+        "http://api.teapai.in/api_getVideoMultipleCategory.php?api_key=$key&cat=$userCategory";
+    try {
+      final response = await http.get(url);
+      final List<dynamic> jsonDat = jsonDecode(response.body);
+
+      videos = jsonDat
+          .map((vid) => VideoInfo(
+              v_id: vid['v_id'],
+              category: vid['category'],
+              userId: vid['userId'],
+              place: vid['place'],
+              assetVideo: "http://api.teapai.in/" + vid['assetVideo'],
+              no_of_likes: vid['no_of_likes']))
+          .toList();
+
+      //print(videos);
+      return videos;
+    } catch (error) {
+      debugPrint(error);
+    }
+  }
 
   List<Map> category = [
     {"cat": "Funny", "selected": false},
@@ -27,7 +60,7 @@ class _CategoryState extends State<Category> {
     {"cat": "Dance", "selected": false},
     {"cat": "Art", "selected": false},
     {"cat": "Science and Education", "selected": false},
-    {"cat": "Beauty and Style", "selected": false},
+    {"cat": "Beauty", "selected": false},
     {"cat": "Travel", "selected": false},
     {"cat": "Sports", "selected": false},
     {"cat": "Gamming", "selected": false},
@@ -40,7 +73,6 @@ class _CategoryState extends State<Category> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        //backgroundColor: Colors.black12,
         body: SafeArea(
           child: Container(
             constraints: BoxConstraints.expand(),
@@ -111,7 +143,7 @@ class _CategoryState extends State<Category> {
                             catList.remove(category[index]['cat']);
                           }
                         }
-                        data.dataList = catList;
+                        //data.dataList = catList;
                         print(catList);
                         // print(data);
                       },
@@ -133,14 +165,20 @@ class _CategoryState extends State<Category> {
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.transparent,
           child: Image.asset('assets/Category/send-btn@3x.png'),
-          onPressed: () {
+          onPressed: () async {
             if (catList.isNotEmpty == true) {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
+              var data = await fetchVideo(catList);
+              if (data != null) {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
                       builder: (BuildContext context) => PlayPage(
-                            data: data,
-                          )));
+                        list: data,
+                      ),
+                    ));
+              } else {
+                print('Error in fetching');
+              }
             } else {
               DialogHelper.exit(context);
             }

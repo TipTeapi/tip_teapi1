@@ -23,6 +23,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  dio: ^3.0.10
   path_provider: ^1.1.2
   shared_preferences: ^0.5.8
   http: ^0.12.2
@@ -37,6 +38,8 @@ dependencies:
   google_sign_in: ^4.5.3
   image_picker: ^0.6.7+4
   share: ^0.6.5+1
+  file_picker: ^2.0.6
+  international_phone_input: ^1.0.4
 
 
 
@@ -55,7 +58,7 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/App-Icon/Icon@2x.png"
+  image_path: "assets/App-Icon/Icon@3x.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
